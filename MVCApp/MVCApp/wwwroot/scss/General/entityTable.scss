@@ -1,0 +1,78 @@
+﻿.tableHelper {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+    .tableHelperButtons {
+        display: flex;
+        gap: 20px;
+
+        .pageSizeForm {
+            display: flex;
+            align-items: center;
+
+            .numberField {
+                width: 60px;
+                padding: 4px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                margin-right: 10px;
+
+                &:focus {
+                    outline: none;
+                    border-color: #007bff;
+                }
+            }
+        }
+    }
+}
+
+.entityTable {
+    margin-top: 20px;
+
+    width: 100%;
+    border-collapse: collapse;
+
+    .headerCellWithFilter {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        justify-content: flex-start;
+    }
+
+    th, td {
+        padding: 12px;
+        text-align: left;
+        border: 1px solid #ddd;
+        text-overflow: ellipsis;
+    }
+
+    th {
+        background-color: #f2f2f2;
+    }
+
+    tbody {
+        tr {
+            &:nth-child(even) {
+                background-color: #f9f9f9;
+            }
+
+            &:hover {
+                background-color: #f1f1f1;
+            }
+        }
+    }
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+
+    .current-page {
+        margin: 0 15px;
+        font-weight: bold;
+        font-size: 16px;
+    }
+}

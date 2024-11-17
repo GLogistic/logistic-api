@@ -1,0 +1,33 @@
+﻿@model CargoUpdateDto
+
+@section Styles {
+    <link rel="stylesheet" href="~/scss/General/formStyles.min.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/scss/General/buttonStyles.min.css" asp-append-version="true" />
+}
+
+<div class="formContainer">
+    <h2 class="formTitle">Update Cargo</h2>
+
+    @using (Html.BeginForm("Update", "Cargo"))
+    {
+        @Html.HiddenFor(m => m.Id)
+
+        <div class="fieldContainer">
+            <label class="fieldLabel">Title</label>
+            @Html.TextBoxFor(m => m.Title, new { @class = "formField" })
+            @Html.ValidationMessageFor(m => m.Title, "", new { @class = "validationErrorText" })
+        </div>
+        <div class="fieldContainer">
+            <label class="fieldLabel">Weight</label>
+            @Html.TextBoxFor(m => m.Weight, new { @class = "formField", type = "number", min = "0", step = "1" })
+            @Html.ValidationMessageFor(m => m.Weight, "", new { @class = "validationErrorText" })
+        </div>
+        <div class="fieldContainer">
+            <label class="fieldLabel">Registration number</label>
+            @Html.TextBoxFor(m => m.RegistrationNumber, new { @class = "formField" })
+            @Html.ValidationMessageFor(m => m.RegistrationNumber, "", new { @class = "validationErrorText" })
+        </div>
+
+        <button type="submit" class="defaultButton">Update Cargo</button>
+    }
+</div>

@@ -1,0 +1,38 @@
+﻿@model TablePagination;
+
+@{
+    var nextPaginationParams = new Dictionary<string, string>
+    {
+        {"page", (Model.CurrentPage + 1).ToString() },
+        { "pageSize", Model.PageSize.ToString() },
+    };
+
+    var previewPaginationParams = new Dictionary<string, string>
+    {
+        {"page", (Model.CurrentPage - 1).ToString() },
+        { "pageSize", Model.PageSize.ToString() },
+    };
+}
+
+
+<div class="pagination">
+    @if (Model.HavePrev)
+    {
+        <a class="defaultButton" asp-route="@Model.ControllerInfo.ViewActionName" , asp-all-route-data="previewPaginationParams">Previous</a>
+    }
+    else
+    {
+        <button class="defaultButton" disabled>Previous</button>
+    }
+
+    <span class="current-page">Page @Model.CurrentPage</span>
+
+    @if (Model.HaveNext)
+    {
+        <a class="defaultButton" asp-route="@Model.ControllerInfo.ViewActionName" , asp-all-route-data="nextPaginationParams">Next</a>
+    }
+    else
+    {
+        <button class="defaultButton" disabled>Next</button>
+    }
+</div>

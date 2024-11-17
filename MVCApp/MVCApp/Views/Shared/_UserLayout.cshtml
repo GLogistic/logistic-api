@@ -1,0 +1,44 @@
+﻿@{
+    var defaultPaginationParams = new Dictionary<string, string>
+    {
+        {"page", "1" },
+        { "pageSize", "10" },
+    };
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GLogistic</title>
+    <link rel="stylesheet" href="~/scss/Layout/layout.min.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/scss/General/defaultSiteStyles.min.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/scss/General/entityTable.min.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/scss/General/buttonStyles.min.css" asp-append-version="true" />
+
+    <link rel="icon" href="~/image3.png" />
+
+</head>
+<body>
+    <header>
+        <div class="headerLogo">
+            <a href="/" class="headerTitle">GLogistic</a>
+        </div>
+        <nav class="entityNav">
+            <ul class="entityNavListContainer">
+                <li><a asp-route="cargos" asp-all-route-data="defaultPaginationParams">Cargo</a></li>
+                <li><a asp-route="routes" asp-all-route-data="defaultPaginationParams">Route</a></li>
+                <li><a asp-route="settlements" asp-all-route-data="defaultPaginationParams">Settlement</a></li>
+                <li><a id="logout-btn">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+    <div class="container">
+        @RenderBody()
+    </div>
+    @await Html.PartialAsync("_ValidationScriptsPartial")   
+    <script src="~/js/deleteEntityButtonFunctions.js"></script>
+    <script src="~/js/LogOut.js"></script>
+</body>
+</html>

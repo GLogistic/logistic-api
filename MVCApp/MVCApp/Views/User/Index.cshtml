@@ -1,0 +1,85 @@
+﻿@model IEnumerable<UserDto>
+
+@{
+    var controllerInfo = new ControllerInfo
+            {
+                ControllerName = ViewBag.ControllerName,
+                ViewActionName = ViewBag.ViewActionName,
+                CreateActionName = ViewBag.CreateActionName,
+                DeleteActionName = ViewBag.DeleteActionName,
+                UpdateActionName = ViewBag.UpdateActionName,
+            };
+
+    var paginationModel = new TablePagination
+            {
+                ControllerInfo = controllerInfo,
+                CurrentPage = ViewBag.CurrentPage,
+                PageSize = ViewBag.PageSize,
+                TotalSize = ViewBag.TotalSize,
+                HaveNext = ViewBag.HaveNext,
+                HavePrev = ViewBag.HavePrev,
+            };
+
+    var tableHelperModel = new TableHelper
+            {
+                ControllerInfo = controllerInfo,
+                TableTitle = "User List",
+                EntityName = "User",
+            };
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/scss/Settlement/index.min.css" asp-append-version="true" />
+}
+
+
+@await Html.PartialAsync("_EntityTableHelperPartial", tableHelperModel)
+
+<table class="entityTable">
+    <thead>
+        <tr>
+            <th>First name</th>
+            <th>Last name</th>
+            <th>User name</th>
+            <th>Email</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                @{
+                    var popUpId = $"delete-user-{user.Id}";
+                    var deleteEntityModel = new DeleteEntity
+                            {
+                                ControllerInfo = controllerInfo,
+                                Id = user.Id,
+                                PopUpId = popUpId,
+                                ItemName = user.UserName,
+                            };
+
+                    var updateActionParameters = new Dictionary<string, string>
+                            {
+                                { "id", $"{user.Id}" }
+                            };
+                }
+                <td>@user.FirstName</td>
+                <td>@user.LastName</td>
+                <td>@user.UserName</td>
+                <td>@user.Email</td>
+                <td>
+                    <button class="defaultButton" onclick="openModal('@popUpId')">
+                        Delete
+                    </button>
+                    <div id="@popUpId" style="display: none; position: absolute;">
+                        @await Html.PartialAsync("_DeleteEntityConfirmPopUpPartial", deleteEntityModel)
+                    </div>
+                    <a class="defaultButton" asp-route="@ViewBag.UpdateActionName" asp-all-route-data="updateActionParameters">Update</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@await Html.PartialAsync("_EntityTablePaginationPartial", paginationModel)

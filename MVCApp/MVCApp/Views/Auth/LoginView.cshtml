@@ -1,0 +1,31 @@
+﻿@model Entities.Models.DTOs.User.UserAuthorizationDto
+
+@section Styles {
+    <link rel="stylesheet" href="~/scss/General/formStyles.min.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/scss/General/buttonStyles.min.css" asp-append-version="true" />
+}
+
+<div class="formContainer">
+    <h2 class="formTitle">Login</h2>
+
+    @using (Html.BeginForm("login", "Auth", FormMethod.Post))
+    {
+        <div class="fieldContainer">
+            @Html.ValidationSummary(false, "", new { @class = "validationErrorText" })
+        </div>
+
+        <div class="fieldContainer">
+            <label class="fieldLabel" for="email">Email</label>
+            @Html.TextBoxFor(m => m.Email, new { @class = "formField", type = "email", required = "required" })
+            @Html.ValidationMessageFor(m => m.Email, "", new { @class = "validationErrorText" })
+        </div>
+
+        <div class="fieldContainer">
+            <label class="fieldLabel" for="password">Password</label>
+            @Html.PasswordFor(m => m.Password, new { @class = "formField", required = "required" })
+            @Html.ValidationMessageFor(m => m.Password, "", new { @class = "validationErrorText" })
+        </div>
+
+        <button type="submit" class="defaultButton">Login</button>
+    }
+</div>

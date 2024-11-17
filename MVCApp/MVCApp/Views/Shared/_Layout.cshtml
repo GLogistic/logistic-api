@@ -1,0 +1,10 @@
+﻿@{
+    if (ViewData["Layout"] != null)
+    {
+        Layout = $"~/Views/Shared/{ViewData["Layout"]}.cshtml";
+    }
+}
+
+@RenderSection("Styles", required: false)
+@RenderBody()
+@RenderSection("Scripts", required: false)

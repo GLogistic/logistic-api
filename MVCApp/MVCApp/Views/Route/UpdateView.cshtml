@@ -1,0 +1,39 @@
+﻿@model RouteUpdateDto
+
+@section Styles {
+    <link rel="stylesheet" href="~/scss/General/formStyles.min.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/scss/General/buttonStyles.min.css" asp-append-version="true" />
+}
+
+<div class="formContainer">
+    <h2 class="formTitle">Update Route</h2>
+
+    @using (Html.BeginForm("Update", "Route"))
+    {
+        @Html.HiddenFor(m => m.Id)
+
+        <div class="fieldContainer">
+            @Html.ValidationSummary(false, "", new { @class = "validationErrorText" })
+        </div>
+
+        <div class="fieldContainer">
+            <label class="fieldLabel" for="distance">Distance</label>
+            @Html.TextBoxFor(m => m.Distance, new { @class = "formField", type = "number", min = "1" })
+            @Html.ValidationMessageFor(m => m.Distance, "", new { @class = "validationErrorText" })
+        </div>
+
+        <div class="fieldContainer">
+            <label class="fieldLabel" for="startSettlement">Start Settlement</label>
+            @Html.DropDownListFor(m => m.StartSettlementId, (SelectList)ViewBag.Settlements, "Select Start Settlement", new { @class = "formField" })
+            @Html.ValidationMessageFor(m => m.StartSettlementId, "", new { @class = "validationErrorText" })
+        </div>
+
+        <div class="fieldContainer">
+            <label class="fieldLabel" for="endSettlement">End Settlement</label>
+            @Html.DropDownListFor(m => m.EndSettlementId, (SelectList)ViewBag.Settlements, "Select End Settlement", new { @class = "formField" })
+            @Html.ValidationMessageFor(m => m.EndSettlementId, "", new { @class = "validationErrorText" })
+        </div>
+
+        <button type="submit" class="defaultButton">Update Route</button>
+    }
+</div>

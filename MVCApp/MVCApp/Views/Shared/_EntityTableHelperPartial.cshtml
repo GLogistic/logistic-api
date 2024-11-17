@@ -1,0 +1,15 @@
+﻿@model TableHelper
+
+<div class="tableHelper">
+    <h2>@Model.TableTitle</h2>
+
+    <div class="tableHelperButtons">
+        <a class="defaultButton" asp-route="@Model.ControllerInfo.CreateActionName">Create @Model.EntityName</a>
+
+        <form method="get" asp-route="@Model.ControllerInfo.ViewActionName" class="pageSizeForm">
+            <input type="hidden" name="page" value="@ViewBag.CurrentPage" />
+            <input type="number" name="pageSize" value="@ViewBag.PageSize" min="1" max="@ViewBag.TotalSize" class="numberField" />
+            <button type="submit" class="defaultButton">Set Page Size</button>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,19 @@
+﻿.defaultButton {
+  background-color: #007bff;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  margin: 0 5px;
+  text-decoration: none;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s;
+}
+.defaultButton:hover {
+  background-color: #0056b3;
+}
+.defaultButton:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}

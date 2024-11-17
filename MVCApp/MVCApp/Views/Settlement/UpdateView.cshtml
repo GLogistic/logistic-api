@@ -1,0 +1,23 @@
+﻿@model SettlementUpdateDto
+
+@section Styles {
+    <link rel="stylesheet" href="~/scss/General/formStyles.min.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/scss/General/buttonStyles.min.css" asp-append-version="true" />
+}
+
+<div class="formContainer">
+    <h2 class="formTitle">Update Settlement</h2>
+
+    @using (Html.BeginForm("Update", "Settlement"))
+    {
+        @Html.HiddenFor(m => m.Id)
+
+        <div class="fieldContainer">
+            <label class="fieldLabel">Title</label>
+            @Html.TextBoxFor(m => m.Title, new { @class = "formField" })
+            @Html.ValidationMessageFor(m => m.Title, "", new { @class = "validationErrorText" })
+        </div>
+
+        <button type="submit" class="defaultButton">Update Settlement</button>
+    }
+</div>

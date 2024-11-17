@@ -1,0 +1,21 @@
+﻿@model SettlementCreateDto
+
+@section Styles {
+    <link rel="stylesheet" href="~/scss/General/formStyles.min.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/scss/General/buttonStyles.min.css" asp-append-version="true" />
+}
+
+<div class="formContainer">
+    <h2 class="formTitle">Create New Settlement</h2>
+
+    @using (Html.BeginForm("Create", "Settlement"))
+    {
+        <div class="fieldContainer">
+            <label class="fieldLabel">Title</label>
+            @Html.TextBoxFor(m => m.Title, new { @class = "formField" })
+            @Html.ValidationMessageFor(m => m.Title, "", new { @class = "validationErrorText" })
+        </div>
+
+        <button type="submit" class="defaultButton">Create Settlement</button>
+    }
+</div>

@@ -1,0 +1,49 @@
+﻿@model UserRegistrationDto
+
+@section Styles {
+    <link rel="stylesheet" href="~/scss/General/formStyles.min.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/scss/General/buttonStyles.min.css" asp-append-version="true" />
+}
+
+<div class="formContainer">
+    <h2 class="formTitle">Register</h2>
+
+    @using (Html.BeginForm("Create", "User", FormMethod.Post))
+    {
+        <div class="fieldContainer">
+            @Html.ValidationSummary(false, "", new { @class = "validationErrorText" })
+        </div>
+
+        <div class="fieldContainer">
+            <label class="fieldLabel" for="firstName">First Name</label>
+            @Html.TextBoxFor(m => m.FirstName, new { @class = "formField", required = "required" })
+            @Html.ValidationMessageFor(m => m.FirstName, "", new { @class = "validationErrorText" })
+        </div>
+
+        <div class="fieldContainer">
+            <label class="fieldLabel" for="lastName">Last Name</label>
+            @Html.TextBoxFor(m => m.LastName, new { @class = "formField", required = "required" })
+            @Html.ValidationMessageFor(m => m.LastName, "", new { @class = "validationErrorText" })
+        </div>
+
+        <div class="fieldContainer">
+            <label class="fieldLabel" for="userName">Username</label>
+            @Html.TextBoxFor(m => m.UserName, new { @class = "formField", required = "required" })
+            @Html.ValidationMessageFor(m => m.UserName, "", new { @class = "validationErrorText" })
+        </div>
+
+        <div class="fieldContainer">
+            <label class="fieldLabel" for="email">Email</label>
+            @Html.TextBoxFor(m => m.Email, new { @class = "formField", type = "email", required = "required" })
+            @Html.ValidationMessageFor(m => m.Email, "", new { @class = "validationErrorText" })
+        </div>
+
+        <div class="fieldContainer">
+            <label class="fieldLabel" for="password">Password</label>
+            @Html.PasswordFor(m => m.Password, new { @class = "formField", required = "required" })
+            @Html.ValidationMessageFor(m => m.Password, "", new { @class = "validationErrorText" })
+        </div>
+
+        <button type="submit" class="defaultButton">Register user</button>
+    }
+</div>

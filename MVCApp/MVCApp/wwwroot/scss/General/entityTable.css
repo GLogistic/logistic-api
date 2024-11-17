@@ -1,0 +1,63 @@
+﻿.tableHelper {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+.tableHelper .tableHelperButtons {
+  display: flex;
+  gap: 20px;
+}
+.tableHelper .tableHelperButtons .pageSizeForm {
+  display: flex;
+  align-items: center;
+}
+.tableHelper .tableHelperButtons .pageSizeForm .numberField {
+  width: 60px;
+  padding: 4px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-right: 10px;
+}
+.tableHelper .tableHelperButtons .pageSizeForm .numberField:focus {
+  outline: none;
+  border-color: #007bff;
+}
+
+.entityTable {
+  margin-top: 20px;
+  width: 100%;
+  border-collapse: collapse;
+}
+.entityTable .headerCellWithFilter {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: flex-start;
+}
+.entityTable th, .entityTable td {
+  padding: 12px;
+  text-align: left;
+  border: 1px solid #ddd;
+  text-overflow: ellipsis;
+}
+.entityTable th {
+  background-color: #f2f2f2;
+}
+.entityTable tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+.entityTable tbody tr:hover {
+  background-color: #f1f1f1;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+}
+.pagination .current-page {
+  margin: 0 15px;
+  font-weight: bold;
+  font-size: 16px;
+}
