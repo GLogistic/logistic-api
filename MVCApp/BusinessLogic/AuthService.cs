@@ -3,6 +3,7 @@ using Contracts.Repositories;
 using Contracts.Services;
 using Entities;
 using Entities.Models.DTOs.User;
+using Entities.ServiceHelpers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -50,7 +51,7 @@ namespace BusinessLogic
             };
         }
 
-        public async Task<Jwt?> AuthorizeAsync(UserAuthorizationDto userAuthorizationDto)
+        public async Task<AuthorizeResult?> AuthorizeAsync(UserAuthorizationDto userAuthorizationDto)
         {
             var userByEmail = await _userRepository.FindByEmailAsync(userAuthorizationDto.Email);
 
@@ -62,7 +63,7 @@ namespace BusinessLogic
 
             var id = userByEmail.Id;
             var roles = await _userRepository.GetUserRolesAsync(userByEmail);
-            return CreateJwtToken(id, roles);
+            return new AuthorizeResult{ Token = CreateJwtToken(id, roles), UserId = id };
         }
         public async Task<bool> RegisterAsync(UserRegistrationDto userRegistrationDto, IEnumerable<string> roles)
         {

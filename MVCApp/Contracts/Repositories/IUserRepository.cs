@@ -9,5 +9,6 @@ namespace Contracts.Repositories
         Task<IEnumerable<string>> GetUserRolesAsync(User user);
         Task<User> CreateAsync(User user, string password, IEnumerable<string> roles);
         Task<bool> CheckPasswordAsync(User user, string password);
+        Task<IEnumerable<string>> GetUserRolesById(Guid id);
     }
 }

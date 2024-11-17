@@ -53,7 +53,7 @@ namespace DbAccess.Repositories
             var userByEmail = await _userManager.FindByEmailAsync(user.Email);
 
             result = await _userManager.AddToRolesAsync(userByEmail, roles);
-
+           
             if (!result.Succeeded)
                 throw new Exception(result.Errors.First().Description);
 
@@ -95,5 +95,15 @@ namespace DbAccess.Repositories
         }
 
         public async Task<bool> CheckPasswordAsync(User user, string password) => await _userManager.CheckPasswordAsync(user, password);
+
+        public async Task<IEnumerable<string>> GetUserRolesById(Guid id)
+        {
+            var user = await _userManager.FindByIdAsync(id.ToString());
+
+            if (user == null)
+                throw new NotFoundException("Entity is not found.");
+
+            return await _userManager.GetRolesAsync(user);
+        }
     }
 }

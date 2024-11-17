@@ -10,7 +10,6 @@ namespace MVCApp.Controllers
     [ApiController]
     public class HomeController : BaseController
     {
-
         public HomeController() { }
 
         public IActionResult Index()

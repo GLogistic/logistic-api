@@ -19,7 +19,7 @@ namespace MVCApp.Controllers
                 Path = "/"
             });
 
-            return RedirectToAction("LoginView", "Auth");
+            return Ok();
         }
     }
 }

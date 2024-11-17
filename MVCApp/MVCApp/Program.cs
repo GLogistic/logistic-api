@@ -23,6 +23,18 @@ builder.Services.ConfigureMapper();
 
 builder.Services.ConfigureCacheProfiles();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowLocalhost3000", policy =>
+    {
+        policy.WithOrigins("http://localhost:3000")
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();
+    });
+});
+
+
 var app = builder.Build();
 
 app.MigrateDatabase<LogisticContext>();
@@ -34,7 +46,7 @@ if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
+    //app.UseHsts();
 }
 
 app.UseHttpsRedirection();
@@ -43,12 +55,16 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseCors("AllowLocalhost3000");
+
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapControllerRoute(
-    name: "Default",
-    pattern: "/",
-    defaults: new { controller = "Home", action = "Index" });
+//app.MapControllerRoute(
+//    name: "Default",
+//    pattern: "/",
+//    defaults: new { controller = "Home", action = "Index" });x    
+
+app.MapControllers();
 
 app.Run();
