@@ -4,6 +4,7 @@ using Contracts.Repositories;
 using Contracts.Services;
 using Entities;
 using Entities.Exceptions;
+using Entities.Pagination;
 
 namespace BusinessLogic
 {
@@ -48,6 +49,22 @@ namespace BusinessLogic
             await _repository.DeleteAsync(settlement);
 
             await transaction.CommitAsync();
+        }
+
+        public new PagedList<TDto> GetByPage<TDto>(PaginationQueryParameters parameters, string? title)
+        {
+            var entities = _repository
+                .GetAll()
+                .Where(s => s.Title.Contains(title ?? ""))
+                .Skip((parameters.page - 1) * parameters.pageSize)
+                .Take(parameters.pageSize);
+
+            var count = _repository.Count();
+
+            var entitiesDtos = _mapperService.Map<IEnumerable<Settlement>, IEnumerable<TDto>>(entities);
+
+            return new PagedList<TDto>(entitiesDtos.ToList(), count, parameters.page, parameters.pageSize);
+
         }
     }
 }

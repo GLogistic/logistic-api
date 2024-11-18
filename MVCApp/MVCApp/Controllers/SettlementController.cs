@@ -23,7 +23,7 @@ namespace MVCApp.Controllers
         [ResponseCache(CacheProfileName = "EntityCache")]
         public IActionResult Index([FromQuery] PaginationQueryParameters parameters, string? titleFilter)
         {
-            var settlements = _settlementService.GetByPage<SettlementDto>(parameters);
+            var settlements = _settlementService.GetByPage<SettlementDto>(parameters, titleFilter);
 
             if (settlements == null || !settlements.Any())
                 return NoContent();
@@ -43,7 +43,7 @@ namespace MVCApp.Controllers
             ViewBag.DeleteActionName = "delete-settlement";
             ViewBag.UpdateActionName = "update-settlement-view";
 
-            return View(settlements.Where(s => s.Title.Contains(titleFilter ?? "")));
+            return Ok(settlements.Where(s => s.Title.Contains(titleFilter ?? "")));
         }
         [HttpGet("create", Name = "create-settlement-view")]
         public IActionResult CreateView() => View();
