@@ -15,6 +15,8 @@ builder.Services.ConfigureContext(builder);
 builder.Services.ConfigureIdentity();
 builder.Services.AddAuthorization();
 
+builder.Services.ConfigureCors();
+
 builder.Services.JwtConfigure(builder);
 
 builder.Services.ConfigureScopedDependencies();
@@ -22,17 +24,6 @@ builder.Services.ConfigureScopedDependencies();
 builder.Services.ConfigureMapper();
 
 builder.Services.ConfigureCacheProfiles();
-
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowLocalhost3000", policy =>
-    {
-        policy.WithOrigins("http://localhost:3000")
-              .AllowAnyHeader()
-              .AllowAnyMethod()
-              .AllowCredentials();
-    });
-});
 
 
 var app = builder.Build();
@@ -55,7 +46,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-app.UseCors("AllowLocalhost3000");
+app.UseCors("GLogisticPolicy");
 
 app.UseAuthentication();
 app.UseAuthorization();

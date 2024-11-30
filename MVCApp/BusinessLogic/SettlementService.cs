@@ -51,7 +51,7 @@ namespace BusinessLogic
             await transaction.CommitAsync();
         }
 
-        public new PagedList<TDto> GetByPage<TDto>(PaginationQueryParameters parameters, string? title)
+        public PagedList<TDto> GetByPage<TDto>(PaginationQueryParameters parameters, string? title)
         {
             var entities = _repository
                 .GetAll()

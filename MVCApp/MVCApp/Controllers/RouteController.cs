@@ -1,4 +1,5 @@
 ﻿using Contracts.Services;
+using Entities;
 using Entities.Models.DTOs;
 using Entities.Pagination;
 using Microsoft.AspNetCore.Mvc;
@@ -6,10 +7,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using MVCApp.Controllers.Attributes;
 using MVCApp.Controllers.Base;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json;
 
 namespace MVCApp.Controllers
 {
-    [AuthorizeByRoles("Admin", "User")]
+    [AuthorizeByRoles]
     [Route("route")]
     [ApiController]
     public class RouteController : BaseController
@@ -27,27 +29,24 @@ namespace MVCApp.Controllers
         [ResponseCache(CacheProfileName = "EntityCache")]
         public IActionResult Index([FromQuery] PaginationQueryParameters parameters, string? startSettlementTitleFilter)
         {
-            var routes = _routeService.GetByPage<RouteDto>(parameters);
+            var routes = _routeService.GetByPage<RouteDto>(parameters, startSettlementTitleFilter);
 
             if (routes == null || !routes.Any())
                 return NoContent();
 
-            ViewBag.CurrentPage = routes.MetaData.CurrentPage;
-            ViewBag.PageSize = routes.MetaData.PageSize;
-            ViewBag.TotalSize = routes.MetaData.TotalSize;
+            string jsonString = JsonSerializer.Serialize(new PaginationResponseParams
+            {
+                currentPage = routes.MetaData.CurrentPage,
+                pageSize = routes.MetaData.PageSize,
+                totalSize = routes.MetaData.TotalSize,
+                totalPages = routes.MetaData.TotalPages,
+                haveNext = routes.MetaData.HaveNext,
+                havePrev = routes.MetaData.HavePrev,
+            });
 
-            ViewBag.StartSettlementTitleFilter = startSettlementTitleFilter ?? "";
+            HttpContext.Response.Headers.Add("X-Pagination-Params", jsonString);
 
-            ViewBag.HaveNext = routes.MetaData.HaveNext;
-            ViewBag.HavePrev = routes.MetaData.HavePrev;
-
-            ViewBag.ControllerName = "Route";
-            ViewBag.ViewActionName = "routes";
-            ViewBag.CreateActionName = "create-route-view";
-            ViewBag.DeleteActionName = "delete-route";
-            ViewBag.UpdateActionName = "update-route-view";
-
-            return View(routes.Where(r => r.StartSettlement!.Title.Contains(startSettlementTitleFilter ?? "")));
+            return Ok(routes);
         }
         [HttpGet("create", Name = "create-route-view")]
         public IActionResult CreateView()

@@ -33,7 +33,7 @@ public class CargoControllerTests
                          .Returns(cargos);
 
         // Act
-        var result = _controller.Index(new PaginationQueryParameters());
+        var result = _controller.Index(new PaginationQueryParameters(), "");
 
         // Assert
         var viewResult = Assert.IsType<ViewResult>(result);
@@ -50,7 +50,7 @@ public class CargoControllerTests
                          .Returns(cargos);
 
         // Act
-        var result = _controller.Index(new PaginationQueryParameters());
+        var result = _controller.Index(new PaginationQueryParameters(), "");
 
         // Assert
         Assert.IsType<NoContentResult>(result);

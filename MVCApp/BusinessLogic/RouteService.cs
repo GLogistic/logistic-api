@@ -17,10 +17,11 @@ namespace BusinessLogic
             _settlementRepository = settlementRepository;
         }
 
-        public override PagedList<TDto> GetByPage<TDto>(PaginationQueryParameters parameters)
+        public PagedList<TDto> GetByPage<TDto>(PaginationQueryParameters parameters, string? startSettlementTitle)
         {
             var routes = _repository
                 .GetAllWithDependencies()
+                .Where(r => r.StartSettlement!.Title.Contains(startSettlementTitle ?? ""))
                 .Skip((parameters.page - 1) * parameters.pageSize)
                 .Take(parameters.pageSize);
 

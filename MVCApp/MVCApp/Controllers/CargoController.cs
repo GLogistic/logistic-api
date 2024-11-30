@@ -5,10 +5,11 @@ using Entities.Pagination;
 using Microsoft.AspNetCore.Mvc;
 using MVCApp.Controllers.Attributes;
 using MVCApp.Controllers.Base;
+using System.Text.Json;
 
 namespace MVCApp.Controllers
 {
-    [AuthorizeByRoles("Admin", "User")]
+    [AuthorizeByRoles]
     [Route("cargo")]
     [ApiController]
     public class CargoController : BaseController
@@ -24,28 +25,24 @@ namespace MVCApp.Controllers
         [ResponseCache(CacheProfileName = "EntityCache")]
         public IActionResult Index([FromQuery] PaginationQueryParameters parameters, string? titleFilter)
         {
-            var cargos = _cargoService.GetByPage<CargoDto>(parameters);
+            var cargos = _cargoService.GetByPage<CargoDto>(parameters, titleFilter);
 
             if (cargos == null || !cargos.Any())
                 return NoContent();
 
-            ViewBag.CurrentPage = cargos.MetaData.CurrentPage;
-            ViewBag.PageSize = cargos.MetaData.PageSize;
-            ViewBag.TotalSize = cargos.MetaData.TotalSize;
+            string jsonString = JsonSerializer.Serialize(new PaginationResponseParams
+            {
+                currentPage = cargos.MetaData.CurrentPage,
+                pageSize = cargos.MetaData.PageSize,
+                totalSize = cargos.MetaData.TotalSize,
+                totalPages = cargos.MetaData.TotalPages,
+                haveNext = cargos.MetaData.HaveNext,
+                havePrev = cargos.MetaData.HavePrev,
+            });
 
-            ViewBag.TitleFilter = titleFilter ?? "";
+            HttpContext.Response.Headers.Add("X-Pagination-Params", jsonString);
 
-            ViewBag.HaveNext = cargos.MetaData.HaveNext;
-            ViewBag.HavePrev = cargos.MetaData.HavePrev;
-
-            ViewBag.ControllerName = "Cargo";
-            ViewBag.ViewActionName = "cargos";
-            ViewBag.CreateActionName = "create-cargo-view";
-            ViewBag.DeleteActionName = "delete-cargo";
-            ViewBag.UpdateActionName = "update-cargo-view";
-
-
-            return View(cargos.Where(c => c.Title.Contains(titleFilter ?? "")));
+            return Ok(cargos);
         }
         [HttpGet("create", Name = "create-cargo-view")]
         public IActionResult CreateView() => View();

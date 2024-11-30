@@ -66,6 +66,20 @@ namespace MVCApp.Extensions
                     });
             });
         }
+        public static void ConfigureCors(this IServiceCollection services)
+        {
+            services.AddCors(options =>
+            {
+                options.AddPolicy("GLogisticPolicy", builder =>
+                {
+                    builder.WithOrigins("http://localhost:3000")
+                          .AllowAnyHeader()
+                          .AllowAnyMethod()
+                          .AllowCredentials()
+                          .WithExposedHeaders("X-Pagination-Params");
+                });
+            });
+        }
         public static void ConfigureIdentity(this IServiceCollection services)
         {
             services.AddIdentity<User, IdentityRole<Guid>>().AddEntityFrameworkStores<LogisticContext>();

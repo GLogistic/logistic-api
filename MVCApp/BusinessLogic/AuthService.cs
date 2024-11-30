@@ -148,6 +148,9 @@ namespace BusinessLogic
         {
             var rolesFromJwt = jwtToken.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value.ToLower());
 
+            if (roles.Count() == 0)
+                return true;
+
             return roles.Any(role => rolesFromJwt.Contains(role.ToLower()));
         }
 

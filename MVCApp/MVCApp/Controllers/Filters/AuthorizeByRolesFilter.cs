@@ -27,16 +27,16 @@ namespace MVCApp.Controllers.Filters
 
                 if (string.IsNullOrEmpty(token))
                 {
-                    context.HttpContext.Response.Redirect("/login");
-                    //context.Result = new UnauthorizedResult();
+                    //context.HttpContext.Response.Redirect("/login");
+                    context.Result = new UnauthorizedResult();
                     return;
                 }
 
                 var jwtHandler = new JwtSecurityTokenHandler();
                 if (!jwtHandler.CanReadToken(token))
                 {
-                    context.HttpContext.Response.Redirect("/login");
-                    //context.Result = new UnauthorizedResult();
+                    //context.HttpContext.Response.Redirect("/login");  
+                    context.Result = new UnauthorizedResult();
                     return;
                 }
 
@@ -44,15 +44,15 @@ namespace MVCApp.Controllers.Filters
 
                 if (!_authService.IsValidToken(token, out jwtToken))
                 {
-                    context.HttpContext.Response.Redirect("/login");
-                    //context.Result = new UnauthorizedResult();
+                    //context.HttpContext.Response.Redirect("/login");
+                    context.Result = new UnauthorizedResult();
                     return;
                 }
 
                 if (jwtToken == null)
                 {
-                    context.HttpContext.Response.Redirect("/login");
-                    //context.Result = new UnauthorizedResult();
+                    //context.HttpContext.Response.Redirect("/login");
+                    context.Result = new UnauthorizedResult();
                     return;
                 }
 
@@ -66,8 +66,8 @@ namespace MVCApp.Controllers.Filters
 
                 if (!_authService.IsValidRoles(jwtToken, _roles))
                 {
-                    context.HttpContext.Response.Redirect("/");
-                    //context.Result = new ForbidResult();
+                    //context.HttpContext.Response.Redirect("/");
+                    context.Result = new ForbidResult();
                     return;
                 }
 

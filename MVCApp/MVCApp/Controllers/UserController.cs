@@ -4,11 +4,12 @@ using Entities.Pagination;
 using Microsoft.AspNetCore.Mvc;
 using MVCApp.Controllers.Attributes;
 using MVCApp.Controllers.Base;
+using System.Text.Json;
 
 namespace MVCApp.Controllers
 {
     [AuthorizeByRoles("Admin")]
-    [Route("users")]
+    [Route("user")]
     [ApiController]
     public class UserController : BaseController
     {
@@ -30,20 +31,19 @@ namespace MVCApp.Controllers
             if (users == null || !users.Any())
                 return NoContent();
 
-            ViewBag.CurrentPage = users.MetaData.CurrentPage;
-            ViewBag.PageSize = users.MetaData.PageSize;
-            ViewBag.TotalSize = users.MetaData.TotalSize;
+            string jsonString = JsonSerializer.Serialize(new PaginationResponseParams
+            {
+                currentPage = users.MetaData.CurrentPage,
+                pageSize = users.MetaData.PageSize,
+                totalSize = users.MetaData.TotalSize,
+                totalPages = users.MetaData.TotalPages,
+                haveNext = users.MetaData.HaveNext,
+                havePrev = users.MetaData.HavePrev,
+            });
 
-            ViewBag.HaveNext = users.MetaData.HaveNext;
-            ViewBag.HavePrev = users.MetaData.HavePrev;
+            HttpContext.Response.Headers.Add("X-Pagination-Params", jsonString);
 
-            ViewBag.ControllerName = "User";
-            ViewBag.ViewActionName = "users";
-            ViewBag.CreateActionName = "create-user-view";
-            ViewBag.DeleteActionName = "delete-user";
-            ViewBag.UpdateActionName = "update-user-view";
-
-            return View(users);
+            return Ok(users);
         }
         [HttpGet("create", Name = "create-user-view")]
         public IActionResult CreateView() => View();

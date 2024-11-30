@@ -38,7 +38,7 @@ namespace Tests
                 .Returns(settlements);
 
             // Act
-            var result = _controller.Index(new PaginationQueryParameters());
+            var result = _controller.Index(new PaginationQueryParameters(), "");
 
             // Assert
             var viewResult = Assert.IsType<ViewResult>(result);

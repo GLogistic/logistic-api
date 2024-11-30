@@ -4,11 +4,12 @@ using Entities.Pagination;
 using Microsoft.AspNetCore.Mvc;
 using MVCApp.Controllers.Attributes;
 using MVCApp.Controllers.Base;
+using System.Text.Json;
 
 namespace MVCApp.Controllers
 {
-    [AuthorizeByRoles("Admin", "User")]
-    [Route("settlements")]
+    [AuthorizeByRoles]
+    [Route("settlement")]
     [ApiController]
     public class SettlementController : BaseController
     {
@@ -28,22 +29,18 @@ namespace MVCApp.Controllers
             if (settlements == null || !settlements.Any())
                 return NoContent();
 
-            ViewBag.CurrentPage = settlements.MetaData.CurrentPage;
-            ViewBag.PageSize = settlements.MetaData.PageSize;
-            ViewBag.TotalSize = settlements.MetaData.TotalSize;
+            string jsonString = JsonSerializer.Serialize(new PaginationResponseParams    { 
+                currentPage = settlements.MetaData.CurrentPage,
+                pageSize = settlements.MetaData.PageSize,
+                totalSize = settlements.MetaData.TotalSize,
+                totalPages = settlements.MetaData.TotalPages,
+                haveNext = settlements.MetaData.HaveNext,
+                havePrev = settlements.MetaData.HavePrev,
+            });
 
-            ViewBag.TitleFilter = titleFilter ?? "";
+            HttpContext.Response.Headers.Add("X-Pagination-Params", jsonString);
 
-            ViewBag.HaveNext = settlements.MetaData.HaveNext;
-            ViewBag.HavePrev = settlements.MetaData.HavePrev;
-
-            ViewBag.ControllerName = "Settlement";
-            ViewBag.ViewActionName = "settlements";
-            ViewBag.CreateActionName = "create-settlement-view";
-            ViewBag.DeleteActionName = "delete-settlement";
-            ViewBag.UpdateActionName = "update-settlement-view";
-
-            return Ok(settlements.Where(s => s.Title.Contains(titleFilter ?? "")));
+            return Ok(settlements);
         }
         [HttpGet("create", Name = "create-settlement-view")]
         public IActionResult CreateView() => View();

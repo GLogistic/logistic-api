@@ -32,7 +32,7 @@ namespace MVCApp.Controllers
                 var token = await _authService.AuthorizeAsync(dto);
 
                 if (token == null)
-                    return Unauthorized();
+                    return Unauthorized("Credentials is invalid");
 
                 Response.Cookies.Append("Bearer", token.Token.Token.ToString(), new CookieOptions { HttpOnly = true, Expires = token.Token.Expire, SameSite = SameSiteMode.Strict });
 

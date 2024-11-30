@@ -10,12 +10,13 @@ using MVCApp.Controllers;
 public class AuthControllerTests
 {
     private readonly Mock<IAuthService> _mockAuthService;
+    private readonly Mock<IUserService> _mockUserService;
     private readonly AuthController _controller;
 
     public AuthControllerTests()
     {
         _mockAuthService = new Mock<IAuthService>();
-        _controller = new AuthController(_mockAuthService.Object);
+        _controller = new AuthController(_mockAuthService.Object, _mockUserService.Object);
     }
 
     [Fact]
@@ -35,9 +36,9 @@ public class AuthControllerTests
         var dto = new UserAuthorizationDto { Email = "gamshik@example.com", Password = "password123" };
         var token = new Jwt { Token = "fake_token", Expire = DateTime.UtcNow.AddHours(1) };
 
-        _mockAuthService
-            .Setup(service => service.AuthorizeAsync(dto))
-            .ReturnsAsync(token);
+        //_mockAuthService
+        //    .Setup(service => service.AuthorizeAsync(dto))
+        //    .ReturnsAsync(token);
 
         // Mock the HttpContext and Response
         var mockHttpContext = new Mock<HttpContext>();

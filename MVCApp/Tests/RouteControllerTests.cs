@@ -36,7 +36,7 @@ namespace MVCApp.Tests.Controllers
                              .Returns(routes);
 
             // Act
-            var result = _controller.Index(new PaginationQueryParameters());
+            var result = _controller.Index(new PaginationQueryParameters(), "");
 
             // Assert
             var viewResult = Assert.IsType<ViewResult>(result);
