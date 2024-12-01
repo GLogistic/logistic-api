@@ -1,12 +1,9 @@
-﻿using System.Text.Json;
-using System.Threading.Tasks;
+﻿using Contracts.Services;
+using Entities.Models.DTOs;
+using Entities.Pagination;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using Xunit;
-using Contracts.Services;
-using Entities.Models.DTOs;
-using Entities.Pagination;
 using MVCApp.Controllers;
 
 public class CargoControllerTests

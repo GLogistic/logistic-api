@@ -1,15 +1,11 @@
 ﻿using Contracts.Services;
-using Entities.Exceptions;
+using Entities;
 using Entities.Models.DTOs.User;
 using Entities.ServiceHelpers;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using MVCApp.Controllers;
-using Xunit;
-using System;
-using System.Threading.Tasks;
-using Entities;
-using Microsoft.AspNetCore.Http;
 
 public class AuthControllerTests
 {

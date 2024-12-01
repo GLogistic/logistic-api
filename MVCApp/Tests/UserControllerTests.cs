@@ -1,13 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Contracts.Services;
+using Entities.Models.DTOs.User;
+using Entities.Pagination;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using Xunit;
-using Contracts.Services;
-using Entities.Models.DTOs.User;
-using Entities.Pagination;
 using MVCApp.Controllers;
 
 public class UserControllerTests
