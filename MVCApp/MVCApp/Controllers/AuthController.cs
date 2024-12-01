@@ -3,7 +3,6 @@ using Entities.Exceptions;
 using Entities.Models.DTOs.User;
 using Microsoft.AspNetCore.Mvc;
 using MVCApp.Controllers.Base;
-using System.Net;
 
 namespace MVCApp.Controllers
 {
@@ -18,11 +17,6 @@ namespace MVCApp.Controllers
         {
             _authService = authService;
             _userService = userService;
-        }
-        [HttpGet("login", Name = "login-view")]
-        public IActionResult LoginView()
-        {
-            return View();
         }
         [HttpPost("login", Name = "login")]
         public async Task<IActionResult> Login([FromBody] UserAuthorizationDto dto)
@@ -48,11 +42,6 @@ namespace MVCApp.Controllers
             {
                 return Unauthorized();
             }
-        }
-        [HttpGet("register", Name = "register-view")]
-        public IActionResult RegisterView()
-        {
-            return View();
         }
         [HttpPost("register", Name = "register")]
         public async Task<IActionResult> Register([FromBody] UserRegistrationDto dto)

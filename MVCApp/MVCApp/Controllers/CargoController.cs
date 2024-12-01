@@ -44,16 +44,11 @@ namespace MVCApp.Controllers
 
             return Ok(cargos);
         }
-        [HttpGet("create", Name = "create-cargo-view")]
-        public IActionResult CreateView() => View();
         [HttpPost("", Name = "create-cargo")]
-        public async Task<IActionResult> Create([FromForm] CargoCreateDto dto)
+        public async Task<IActionResult> Create([FromBody] CargoCreateDto dto)
         {
-            if (!ModelState.IsValid)
-                return View("CreateView", dto);
-
-            await _cargoService.CreateAsync<CargoCreateDto, CargoDto>(dto);
-            return RedirectToAction("Index", new { page = 1, pageSize = 10 });
+            var newCargo = await _cargoService.CreateAsync<CargoCreateDto, CargoDto>(dto);
+            return Ok(newCargo);
         }
         [HttpPost("delete", Name = "delete-cargo")]
         public async Task<IActionResult> Delete([FromBody] CargoDeleteDto dto)
@@ -61,20 +56,11 @@ namespace MVCApp.Controllers
             await _cargoService.DeleteByIdAsync(dto.Id);
             return Ok();
         }
-        [HttpGet("update", Name = "update-cargo-view")]
-        public async Task<IActionResult> UpdateView([FromQuery] Guid id)
+        [HttpPut("update", Name = "update-cargo")]
+        public async Task<IActionResult> Update([FromBody] CargoUpdateDto dto)
         {
-            var cargo = await _cargoService.GetByIdAsync<CargoUpdateDto>(id);
-            return View(cargo);
-        }
-        [HttpPost("update", Name = "update-cargo")]
-        public async Task<IActionResult> Update([FromForm] CargoUpdateDto dto)
-        {
-            if (!ModelState.IsValid || string.IsNullOrEmpty(dto.Id.ToString()))
-                return View("UpdateView", dto);
-
-            await _cargoService.UpdateAsync<CargoUpdateDto, CargoDto>(dto);
-            return RedirectToAction("Index", new { page = 1, pageSize = 10 });
+            var cargo = await _cargoService.UpdateAsync<CargoUpdateDto, CargoDto>(dto);
+            return Ok(cargo);
         }
     }
 }

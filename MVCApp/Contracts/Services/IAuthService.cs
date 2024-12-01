@@ -1,5 +1,4 @@
-﻿using Entities;
-using Entities.Models.DTOs.User;
+﻿using Entities.Models.DTOs.User;
 using Entities.ServiceHelpers;
 using System.IdentityModel.Tokens.Jwt;
 namespace Contracts.Services

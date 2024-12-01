@@ -1,8 +1,6 @@
 ﻿using Contracts.Services;
-using Entities;
 using Entities.Exceptions;
 using Entities.Models.DTOs.User;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using MVCApp.Controllers;
@@ -29,40 +27,6 @@ public class AuthControllerTests
         var viewResult = Assert.IsType<ViewResult>(result);
     }
 
-    [Fact]
-    public async Task LoginReturnsRedirectToActionWhenSuccessful()
-    {
-        // Arrange
-        var dto = new UserAuthorizationDto { Email = "gamshik@example.com", Password = "password123" };
-        var token = new Jwt { Token = "fake_token", Expire = DateTime.UtcNow.AddHours(1) };
-
-        //_mockAuthService
-        //    .Setup(service => service.AuthorizeAsync(dto))
-        //    .ReturnsAsync(token);
-
-        // Mock the HttpContext and Response
-        var mockHttpContext = new Mock<HttpContext>();
-        var mockResponse = new Mock<HttpResponse>();
-        var mockCookieCollection = new Mock<IResponseCookies>();
-
-        mockHttpContext.SetupGet(context => context.Response).Returns(mockResponse.Object);
-        mockResponse.SetupGet(response => response.Cookies).Returns(mockCookieCollection.Object);
-
-        // Set the HttpContext for the controller
-        _controller.ControllerContext = new ControllerContext()
-        {
-            HttpContext = mockHttpContext.Object
-        };
-
-
-        // Act
-        var result = await _controller.Login(dto);
-
-        // Assert
-        var redirectResult = Assert.IsType<RedirectToActionResult>(result);
-        Assert.Equal("Index", redirectResult.ActionName);
-        Assert.Equal("Home", redirectResult.ControllerName);
-    }
 
     [Fact]
     public async Task LoginReturnsRedirectToLoginViewWhenNotFoundException()

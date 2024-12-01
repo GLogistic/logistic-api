@@ -63,7 +63,7 @@ namespace BusinessLogic
 
             var id = userByEmail.Id;
             var roles = await _userRepository.GetUserRolesAsync(userByEmail);
-            return new AuthorizeResult{ Token = CreateJwtToken(id, roles), UserId = id };
+            return new AuthorizeResult { Token = CreateJwtToken(id, roles), UserId = id };
         }
         public async Task<bool> RegisterAsync(UserRegistrationDto userRegistrationDto, IEnumerable<string> roles)
         {

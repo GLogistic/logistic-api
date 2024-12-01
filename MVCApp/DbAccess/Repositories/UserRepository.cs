@@ -53,7 +53,7 @@ namespace DbAccess.Repositories
             var userByEmail = await _userManager.FindByEmailAsync(user.Email);
 
             result = await _userManager.AddToRolesAsync(userByEmail, roles);
-           
+
             if (!result.Succeeded)
                 throw new Exception(result.Errors.First().Description);
 

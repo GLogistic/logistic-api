@@ -45,16 +45,11 @@ namespace MVCApp.Controllers
 
             return Ok(users);
         }
-        [HttpGet("create", Name = "create-user-view")]
-        public IActionResult CreateView() => View();
         [HttpPost("create", Name = "create-user")]
         public async Task<IActionResult> Create([FromForm] UserRegistrationDto dto)
         {
-            if (!ModelState.IsValid)
-                return View("CreateView", dto);
-
             await _authService.RegisterAsync(dto, ["User"]);
-            return RedirectToAction("Index", new { page = 1, pageSize = 10 });
+            return Ok();
         }
         [HttpPost("delete", Name = "delete-user")]
         public async Task<IActionResult> Delete([FromBody] UserDeleteDto dto)
@@ -62,20 +57,11 @@ namespace MVCApp.Controllers
             await _userService.DeleteByIdAsync(dto.Id);
             return Ok();
         }
-        [HttpGet("update", Name = "update-user-view")]
-        public async Task<IActionResult> UpdateView([FromQuery] Guid id)
+        [HttpPut("update", Name = "update-user")]
+        public async Task<IActionResult> Update([FromBody] UserUpdateDto dto)
         {
-            var user = await _userService.GetByIdAsync<UserUpdateDto>(id);
-            return View(user);
-        }
-        [HttpPost("update", Name = "update-user")]
-        public async Task<IActionResult> Update([FromForm] UserUpdateDto dto)
-        {
-            if (!ModelState.IsValid || string.IsNullOrEmpty(dto.Id.ToString()))
-                return View("UpdateView", dto);
-
-            await _userService.UpdateAsync<UserUpdateDto, UserDto>(dto);
-            return RedirectToAction("Index", new { page = 1, pageSize = 10 });
+            var user = await _userService.UpdateAsync<UserUpdateDto, UserDto>(dto);
+            return Ok(user);
         }
     }
 }
