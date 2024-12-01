@@ -53,11 +53,11 @@ namespace MVCApp.Controllers
             await _settlementService.CreateAsync<SettlementCreateDto, SettlementDto>(dto);
             return RedirectToAction("Index", new { page = 1, pageSize = 10 });
         }
-        [HttpPost("delete-settlement", Name = "delete-settlement")]
-        public async Task<IActionResult> Delete([FromForm] SettlementDeleteDto dto)
+        [HttpPost("delete", Name = "delete-settlement")]
+        public async Task<IActionResult> Delete([FromBody] SettlementDeleteDto dto)
         {
             await _settlementService.DeleteByIdAsync(dto.Id);
-            return RedirectToAction("Index", new { page = 1, pageSize = 10 });
+            return Ok();
         }
         [HttpGet("update", Name = "update-settlement-view")]
         public async Task<IActionResult> UpdateView([FromQuery] Guid id)

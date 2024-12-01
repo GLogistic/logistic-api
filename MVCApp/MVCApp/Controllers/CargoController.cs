@@ -55,11 +55,11 @@ namespace MVCApp.Controllers
             await _cargoService.CreateAsync<CargoCreateDto, CargoDto>(dto);
             return RedirectToAction("Index", new { page = 1, pageSize = 10 });
         }
-        [HttpPost("delete-cargo", Name = "delete-cargo")]
-        public async Task<IActionResult> Delete([FromForm] CargoDeleteDto dto)
+        [HttpPost("delete", Name = "delete-cargo")]
+        public async Task<IActionResult> Delete([FromBody] CargoDeleteDto dto)
         {
             await _cargoService.DeleteByIdAsync(dto.Id);
-            return RedirectToAction("Index", new { page = 1, pageSize = 10 });
+            return Ok();
         }
         [HttpGet("update", Name = "update-cargo-view")]
         public async Task<IActionResult> UpdateView([FromQuery] Guid id)

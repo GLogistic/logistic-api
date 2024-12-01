@@ -56,11 +56,11 @@ namespace MVCApp.Controllers
             await _authService.RegisterAsync(dto, ["User"]);
             return RedirectToAction("Index", new { page = 1, pageSize = 10 });
         }
-        [HttpPost("delete-user", Name = "delete-user")]
-        public async Task<IActionResult> Delete([FromForm] UserDeleteDto dto)
+        [HttpPost("delete", Name = "delete-user")]
+        public async Task<IActionResult> Delete([FromBody] UserDeleteDto dto)
         {
             await _userService.DeleteByIdAsync(dto.Id);
-            return RedirectToAction("Index", new { page = 1, pageSize = 10 });
+            return Ok();
         }
         [HttpGet("update", Name = "update-user-view")]
         public async Task<IActionResult> UpdateView([FromQuery] Guid id)

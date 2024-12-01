@@ -78,11 +78,11 @@ namespace MVCApp.Controllers
             await _routeService.CreateAsync<RouteCreateDto, RouteDto>(dto);
             return RedirectToAction("Index", new { page = 1, pageSize = 10 });
         }
-        [HttpPost("delete-route", Name = "delete-route")]
-        public async Task<IActionResult> Delete([FromForm] RouteDeleteDto dto)
+        [HttpPost("delete", Name = "delete-route")]
+        public async Task<IActionResult> Delete([FromBody] RouteDeleteDto dto)
         {
             await _routeService.DeleteByIdAsync(dto.Id);
-            return RedirectToAction("Index", new { page = 1, pageSize = 10 });
+            return Ok();
         }
         [HttpGet("update", Name = "update-route-view")]
         public async Task<IActionResult> UpdateView([FromQuery] Guid id)
