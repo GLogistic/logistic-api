@@ -49,9 +49,9 @@ namespace MVCApp.Controllers
             var isRegister = await _authService.RegisterAsync(dto, ["User"]);
 
             if (!isRegister)
-                return RedirectToAction("RegisterView");
+                return BadRequest();
 
-            return RedirectToAction("LoginView");
+            return Ok();
         }
     }
 }

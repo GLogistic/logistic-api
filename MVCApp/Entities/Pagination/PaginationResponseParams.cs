@@ -7,7 +7,7 @@ namespace Entities.Pagination
         public int pageSize { get; set; }
         public int totalSize { get; set; }
         public int totalPages { get; set; }
-        public Boolean haveNext { get; set; }
-        public Boolean havePrev { get; set; }
+        public bool haveNext { get; set; }
+        public bool havePrev { get; set; }
     }
 }

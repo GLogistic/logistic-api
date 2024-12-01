@@ -1,8 +1,12 @@
-﻿using Contracts.Services;
-using Entities.Models.DTOs;
-using Entities.Pagination;
+﻿using System.Text.Json;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
+using Xunit;
+using Contracts.Services;
+using Entities.Models.DTOs;
+using Entities.Pagination;
 using MVCApp.Controllers;
 
 public class CargoControllerTests
@@ -14,131 +18,102 @@ public class CargoControllerTests
     {
         _mockCargoService = new Mock<ICargoService>();
         _controller = new CargoController(_mockCargoService.Object);
+
+        // Мокаем HttpContext для Response.Headers
+        _controller.ControllerContext = new ControllerContext
+        {
+            HttpContext = new DefaultHttpContext()
+        };
     }
 
     [Fact]
-    public void IndexReturnsViewWithCargosWhenDataExists()
+    public void Index_ReturnsOk_WhenCargosExist()
     {
         // Arrange
-        var cargos = new PagedList<CargoDto>(
-            new List<CargoDto>
-            {
-                new CargoDto { Id = Guid.NewGuid(), Title = "Cargo 1", Weight = 100, RegistrationNumber = "A123" },
-                new CargoDto { Id = Guid.NewGuid(), Title = "Cargo 2", Weight = 200, RegistrationNumber = "B123" }
-            },
-            1, 1, 10
-        );
+        var paginationParams = new PaginationQueryParameters { page = 1, pageSize = 10 };
+        var cargos = new PagedList<CargoDto>(new List<CargoDto>
+        {
+            new CargoDto { Title = "Cargo1", Weight = 100, RegistrationNumber = "ABC123" },
+            new CargoDto { Title = "Cargo2", Weight = 200, RegistrationNumber = "XYZ789" }
+        }, 1, 10, 2);
 
-        _mockCargoService.Setup(service => service.GetByPage<CargoDto>(It.IsAny<PaginationQueryParameters>()))
-                         .Returns(cargos);
+        _mockCargoService.Setup(s => s.GetByPage<CargoDto>(paginationParams, null))
+            .Returns(cargos);
 
         // Act
-        var result = _controller.Index(new PaginationQueryParameters(), "");
+        var result = _controller.Index(paginationParams, null);
 
         // Assert
-        var viewResult = Assert.IsType<ViewResult>(result);
-        var model = Assert.IsAssignableFrom<PagedList<CargoDto>>(viewResult.Model);
-        Assert.Equal(2, model.Count());
+        var okResult = Assert.IsType<OkObjectResult>(result);
+        var returnedCargos = Assert.IsType<PagedList<CargoDto>>(okResult.Value);
+        Assert.Equal(2, returnedCargos.Count);
     }
 
     [Fact]
-    public void IndexReturnsNoContentWhenNoData()
+    public void Index_ReturnsNoContent_WhenNoCargosExist()
     {
         // Arrange
-        var cargos = new PagedList<CargoDto>(new List<CargoDto>(), 1, 1, 10);
-        _mockCargoService.Setup(service => service.GetByPage<CargoDto>(It.IsAny<PaginationQueryParameters>()))
-                         .Returns(cargos);
+        var paginationParams = new PaginationQueryParameters { page = 1, pageSize = 10 };
+        _mockCargoService.Setup(s => s.GetByPage<CargoDto>(paginationParams, null))
+            .Returns(new PagedList<CargoDto>(new List<CargoDto>(), 1, 10, 0));
 
         // Act
-        var result = _controller.Index(new PaginationQueryParameters(), "");
+        var result = _controller.Index(paginationParams, null);
 
         // Assert
         Assert.IsType<NoContentResult>(result);
     }
 
     [Fact]
-    public async Task CreateReturnsViewWithErrorWhenModelStateInvalid()
+    public async Task Create_ReturnsOk_WhenCargoIsCreated()
     {
         // Arrange
-        var invalidDto = new CargoCreateDto
-        {
-            Title = "",
-            Weight = -1,
-            RegistrationNumber = ""
-        };
-        _controller.ModelState.AddModelError("Title", "Cargo Title is required.");
+        var createDto = new CargoCreateDto { Title = "New Cargo", Weight = 150, RegistrationNumber = "REG123" };
+        var createdCargo = new CargoDto { Title = "New Cargo", Weight = 150, RegistrationNumber = "REG123" };
+
+        _mockCargoService.Setup(s => s.CreateAsync<CargoCreateDto, CargoDto>(createDto))
+            .ReturnsAsync(createdCargo);
 
         // Act
-        var result = await _controller.Create(invalidDto);
+        var result = await _controller.Create(createDto);
 
         // Assert
-        var viewResult = Assert.IsType<ViewResult>(result);
-        var model = Assert.IsAssignableFrom<CargoCreateDto>(viewResult.Model);
-        Assert.False(_controller.ModelState.IsValid);
+        var okResult = Assert.IsType<OkObjectResult>(result);
+        var returnedCargo = Assert.IsType<CargoDto>(okResult.Value);
+        Assert.Equal(createDto.Title, returnedCargo.Title);
     }
 
     [Fact]
-    public async Task CreateRedirectsToIndexWhenModelStateValid()
-    {
-        // Arrange
-        var validDto = new CargoCreateDto
-        {
-            Title = "Cargo 1",
-            Weight = 100,
-            RegistrationNumber = "A123"
-        };
-
-        _mockCargoService.Setup(service => service.CreateAsync<CargoCreateDto, CargoDto>(It.IsAny<CargoCreateDto>()))
-                         .ReturnsAsync(new CargoDto { Id = Guid.NewGuid(), Title = "Cargo 1", Weight = 100, RegistrationNumber = "A123" });
-
-        // Act
-        var result = await _controller.Create(validDto);
-
-        // Assert
-        var redirectResult = Assert.IsType<RedirectToActionResult>(result);
-        Assert.Equal("Index", redirectResult.ActionName);
-        Assert.Equal(1, redirectResult.RouteValues["page"]);
-        Assert.Equal(10, redirectResult.RouteValues["pageSize"]);
-    }
-
-    [Fact]
-    public async Task UpdateReturnsViewWithErrorWhenModelStateInvalid()
-    {
-        // Arrange
-        var invalidDto = new CargoUpdateDto
-        {
-            Id = Guid.NewGuid(),
-            Title = "",
-            Weight = -1,
-            RegistrationNumber = ""
-        };
-        _controller.ModelState.AddModelError("Title", "Cargo Title is required.");
-
-        // Act
-        var result = await _controller.Update(invalidDto);
-
-        // Assert
-        var viewResult = Assert.IsType<ViewResult>(result);
-        var model = Assert.IsAssignableFrom<CargoUpdateDto>(viewResult.Model);
-        Assert.False(_controller.ModelState.IsValid);
-    }
-
-    [Fact]
-    public async Task DeleteRedirectsToIndexWhenCargoIsDeleted()
+    public async Task Delete_ReturnsOk_WhenCargoIsDeleted()
     {
         // Arrange
         var deleteDto = new CargoDeleteDto { Id = Guid.NewGuid() };
-
-        _mockCargoService.Setup(service => service.DeleteByIdAsync(deleteDto.Id))
-                         .Returns(Task.CompletedTask);
+        _mockCargoService.Setup(s => s.DeleteByIdAsync(deleteDto.Id))
+            .Returns(Task.CompletedTask);
 
         // Act
         var result = await _controller.Delete(deleteDto);
 
         // Assert
-        var redirectResult = Assert.IsType<RedirectToActionResult>(result);
-        Assert.Equal("Index", redirectResult.ActionName);
-        Assert.Equal(1, redirectResult.RouteValues["page"]);
-        Assert.Equal(10, redirectResult.RouteValues["pageSize"]);
+        Assert.IsType<OkResult>(result);
+    }
+
+    [Fact]
+    public async Task Update_ReturnsOk_WhenCargoIsUpdated()
+    {
+        // Arrange
+        var updateDto = new CargoUpdateDto { Id = Guid.NewGuid(), Title = "Updated Cargo", Weight = 200, RegistrationNumber = "UPDATED123" };
+        var updatedCargo = new CargoDto { Title = "Updated Cargo", Weight = 200, RegistrationNumber = "UPDATED123" };
+
+        _mockCargoService.Setup(s => s.UpdateAsync<CargoUpdateDto, CargoDto>(updateDto))
+            .ReturnsAsync(updatedCargo);
+
+        // Act
+        var result = await _controller.Update(updateDto);
+
+        // Assert
+        var okResult = Assert.IsType<OkObjectResult>(result);
+        var returnedCargo = Assert.IsType<CargoDto>(okResult.Value);
+        Assert.Equal(updateDto.Title, returnedCargo.Title);
     }
 }

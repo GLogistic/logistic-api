@@ -1,113 +1,142 @@
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Moq;
+using Xunit;
 using Contracts.Services;
 using Entities.Models.DTOs;
 using Entities.Pagination;
-using Microsoft.AspNetCore.Mvc;
-using Moq;
 using MVCApp.Controllers;
 
-namespace Tests
+public class SettlementControllerTests
 {
-    public class SettlementControllerTests
+    private readonly Mock<ISettlementService> _mockSettlementService;
+    private readonly SettlementController _controller;
+
+    public SettlementControllerTests()
     {
-        private readonly Mock<ISettlementService> _mockSettlementService;
-        private readonly SettlementController _controller;
+        _mockSettlementService = new Mock<ISettlementService>();
+        _controller = new SettlementController(_mockSettlementService.Object);
 
-        public SettlementControllerTests()
+        // Мокаем HttpContext для Response.Headers
+        _controller.ControllerContext = new ControllerContext
         {
-            _mockSettlementService = new Mock<ISettlementService>();
-            _controller = new SettlementController(_mockSettlementService.Object);
-        }
+            HttpContext = new DefaultHttpContext()
+        };
+    }
 
-        [Fact]
-        public void IndexReturnsViewWithSettlements()
+    [Fact]
+    public void Index_ReturnsOk_WhenSettlementsExist()
+    {
+        // Arrange
+        var paginationParams = new PaginationQueryParameters { page = 1, pageSize = 10 };
+        var settlements = new PagedList<SettlementDto>(new List<SettlementDto>
         {
-            // Arrange
-            var settlements = new PagedList<SettlementDto>
-            (
-                new List<SettlementDto>
-                {
-                    new SettlementDto { Id = Guid.NewGuid(), Title = "Test Settlement 1" },
-                    new SettlementDto { Id = Guid.NewGuid(), Title = "Test Settlement 2" }
-                },
-                5,
-                1,
-                10
-            );
-            _mockSettlementService
-                .Setup(service => service.GetByPage<SettlementDto>(It.IsAny<PaginationQueryParameters>()))
-                .Returns(settlements);
+            new SettlementDto { Title = "Settlement1" },
+            new SettlementDto { Title = "Settlement2" }
+        }, 1, 10, 2);
 
-            // Act
-            var result = _controller.Index(new PaginationQueryParameters(), "");
+        _mockSettlementService.Setup(s => s.GetByPage<SettlementDto>(paginationParams, null))
+            .Returns(settlements);
 
-            // Assert
-            var viewResult = Assert.IsType<ViewResult>(result);
-            var model = Assert.IsAssignableFrom<PagedList<SettlementDto>>(viewResult.Model);
-            Assert.Equal(2, model.Count());
-        }
+        // Act
+        var result = _controller.Index(paginationParams, null);
 
-        [Fact]
-        public async Task CreatePostReturnsRedirectWhenValidModel()
+        // Assert
+        var okResult = Assert.IsType<OkObjectResult>(result);
+        var returnedSettlements = Assert.IsType<PagedList<SettlementDto>>(okResult.Value);
+        Assert.Equal(2, returnedSettlements.Count);
+    }
+
+    [Fact]
+    public void Index_ReturnsNoContent_WhenNoSettlementsExist()
+    {
+        // Arrange
+        var paginationParams = new PaginationQueryParameters { page = 1, pageSize = 10 };
+        _mockSettlementService.Setup(s => s.GetByPage<SettlementDto>(paginationParams, null))
+            .Returns(new PagedList<SettlementDto>(new List<SettlementDto>(), 1, 10, 0));
+
+        // Act
+        var result = _controller.Index(paginationParams, null);
+
+        // Assert
+        Assert.IsType<NoContentResult>(result);
+    }
+
+    [Fact]
+    public void GetAll_ReturnsOk_WithSettlements()
+    {
+        // Arrange
+        var settlements = new List<SettlementDto>
         {
-            // Arrange
-            var dto = new SettlementCreateDto { Title = "New Settlement" };
-            _mockSettlementService.Setup(service => service.CreateAsync<SettlementCreateDto, SettlementDto>(It.IsAny<SettlementCreateDto>()))
-                .ReturnsAsync(new SettlementDto { Id = Guid.NewGuid(), Title = "New Settlement" });
+            new SettlementDto { Title = "Settlement1" },
+            new SettlementDto { Title = "Settlement2" }
+        };
 
-            // Act
-            var result = await _controller.Create(dto);
+        _mockSettlementService.Setup(s => s.GetAll<SettlementDto>())
+            .Returns(settlements);
 
-            // Assert
-            var redirectResult = Assert.IsType<RedirectToActionResult>(result);
-            Assert.Equal("Index", redirectResult.ActionName);
-        }
+        // Act
+        var result = _controller.GetAll();
 
-        [Fact]
-        public async Task DeletePostReturnsRedirect()
-        {
-            // Arrange
-            var dto = new SettlementDeleteDto { Id = Guid.NewGuid() };
-            _mockSettlementService.Setup(service => service.DeleteByIdAsync(dto.Id)).Returns(Task.CompletedTask);
+        // Assert
+        var okResult = Assert.IsType<OkObjectResult>(result);
+        var returnedSettlements = Assert.IsType<List<SettlementDto>>(okResult.Value);
+        Assert.Equal(2, returnedSettlements.Count);
+    }
 
-            // Act
-            var result = await _controller.Delete(dto);
+    [Fact]
+    public async Task Create_ReturnsOk_WhenSettlementIsCreated()
+    {
+        // Arrange
+        var createDto = new SettlementCreateDto { Title = "New Settlement" };
+        var createdSettlement = new SettlementDto { Title = "New Settlement" };
 
-            // Assert
-            var redirectResult = Assert.IsType<RedirectToActionResult>(result);
-            Assert.Equal("Index", redirectResult.ActionName);
-        }
+        _mockSettlementService.Setup(s => s.CreateAsync<SettlementCreateDto, SettlementDto>(createDto))
+            .ReturnsAsync(createdSettlement);
 
-        [Fact]
-        public async Task UpdateViewReturnsViewWithSettlement()
-        {
-            // Arrange
-            var settlementDto = new SettlementUpdateDto { Id = Guid.NewGuid(), Title = "Test Settlement" };
-            _mockSettlementService.Setup(service => service.GetByIdAsync<SettlementUpdateDto>(It.IsAny<Guid>()))
-                .ReturnsAsync(settlementDto);
+        // Act
+        var result = await _controller.Create(createDto);
 
-            // Act
-            var result = await _controller.UpdateView(Guid.NewGuid());
+        // Assert
+        var okResult = Assert.IsType<OkObjectResult>(result);
+        var returnedSettlement = Assert.IsType<SettlementDto>(okResult.Value);
+        Assert.Equal(createDto.Title, returnedSettlement.Title);
+    }
 
-            // Assert
-            var viewResult = Assert.IsType<ViewResult>(result);
-            var model = Assert.IsAssignableFrom<SettlementUpdateDto>(viewResult.Model);
-            Assert.Equal("Test Settlement", model.Title);
-        }
+    [Fact]
+    public async Task Delete_ReturnsOk_WhenSettlementIsDeleted()
+    {
+        // Arrange
+        var deleteDto = new SettlementDeleteDto { Id = Guid.NewGuid() };
+        _mockSettlementService.Setup(s => s.DeleteByIdAsync(deleteDto.Id))
+            .Returns(Task.CompletedTask);
 
-        [Fact]
-        public async Task UpdatePostReturnsRedirectWhenValidModel()
-        {
-            // Arrange
-            var dto = new SettlementUpdateDto { Id = Guid.NewGuid(), Title = "Updated Settlement" };
-            _mockSettlementService.Setup(service => service.UpdateAsync<SettlementUpdateDto, SettlementDto>(It.IsAny<SettlementUpdateDto>()))
-                .ReturnsAsync(new SettlementDto { Id = dto.Id, Title = "Updated Settlement" });
+        // Act
+        var result = await _controller.Delete(deleteDto);
 
-            // Act
-            var result = await _controller.Update(dto);
+        // Assert
+        Assert.IsType<OkResult>(result);
+    }
 
-            // Assert
-            var redirectResult = Assert.IsType<RedirectToActionResult>(result);
-            Assert.Equal("Index", redirectResult.ActionName);
-        }
+    [Fact]
+    public async Task Update_ReturnsOk_WhenSettlementIsUpdated()
+    {
+        // Arrange
+        var updateDto = new SettlementUpdateDto { Id = Guid.NewGuid(), Title = "Updated Settlement" };
+        var updatedSettlement = new SettlementDto { Title = "Updated Settlement" };
+
+        _mockSettlementService.Setup(s => s.UpdateAsync<SettlementUpdateDto, SettlementDto>(updateDto))
+            .ReturnsAsync(updatedSettlement);
+
+        // Act
+        var result = await _controller.Update(updateDto);
+
+        // Assert
+        var okResult = Assert.IsType<OkObjectResult>(result);
+        var returnedSettlement = Assert.IsType<SettlementDto>(okResult.Value);
+        Assert.Equal(updateDto.Title, returnedSettlement.Title);
     }
 }
